@@ -28,13 +28,17 @@ where
 mod tests {
     use super::*;
     use futures::future::{AbortHandle, Abortable, Aborted};
+    use std::cell::RefCell;
     use tokio;
 
     #[tokio::test]
     async fn it_works() {
         let data = [3u32, 1, 6, 4, 2, 5];
+        let sorted = [1u32, 2, 3, 4, 5, 6];
+        let it = RefCell::new(sorted.iter());
         sleep_sort(data.iter().cloned(), |n| {
-            println!("{}", n);
+            let expected = it.borrow_mut().next().unwrap();
+            assert_eq!(n, *expected);
         })
         .await;
     }
